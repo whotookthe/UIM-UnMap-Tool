@@ -11,35 +11,42 @@
 
         console.log('Processing SIM card number:', simCardNumbers[index]);
 
-        // Initial click to start the process
+        // Initial click to start the process Logical Devices Button
         var firstElement = document.getElementById('pt1:pt_r1:0:d1:0:j_id13');
         if (firstElement) {
             firstElement.click();
             setTimeout(function() {
+                // Input field for SIM card number
                 var simInput = document.getElementById('pt1:MA:0:n1:1:pt1:i3:0:text::content');
                 if (simInput) {
                     simInput.value = simCardNumbers[index];
+                    // Search button
                     var searchButton = document.getElementById('pt1:MA:0:n1:1:pt1:searchButton');
                     if (searchButton) {
                         searchButton.click();
                         setTimeout(function() {
+                            // SIM hyperlink in search results
                             var simHyperlink = document.getElementById('pt1:MA:0:n1:1:pt1:pc1:ldrt:0:cl1');
                             if (simHyperlink) {
                                 simHyperlink.click();
                                 setTimeout(function() {
+                                    // "Services" button link
                                     var topServiceHyperlink = document.getElementById('pt1:MA:0:n1:2:pt1:r10:0:j_id__ctru1pc12:t1:0:cl1');
                                     if (topServiceHyperlink) {
                                         topServiceHyperlink.click();
                                         setTimeout(function() {
+                                            // Actions dropdown
                                             var actionsDropdown = document.getElementById('pt1:MA:0:n1:3:pt1:j_id__ctru10pc6');
                                             if (actionsDropdown) {
                                                 actionsDropdown.click();
                                                 setTimeout(function() {
+                                                    // Disconnect option in actions dropdown
                                                     var disconnectOption = document.getElementById('pt1:MA:0:n1:3:pt1:DISCONNECT');
                                                     if (disconnectOption) {
                                                         disconnectOption.click();
                                                         setTimeout(function() {
-                                                            var completeOption = document.getElementById('pt1:MA:0:n1:3:pt1:COMPLETE');
+                                                            // Complete option to finalize the process using XPath
+                                                            var completeOption = document.evaluate('//*[@id="pt1:MA:0:n1:3:pt1:COMPLETE"]/td[2]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                                                             if (completeOption) {
                                                                 completeOption.click();
                                                                 console.log('Clicked on COMPLETE for SIM card:', simCardNumbers[index]);
