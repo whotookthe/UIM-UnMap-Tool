@@ -13,40 +13,54 @@
 
         // Initial click to start the process Logical Devices Button
         var firstElement = document.getElementById('pt1:pt_r1:0:d1:0:j_id13');
+        console.log('Attempting to click firstElement:', firstElement);
         if (firstElement) {
             firstElement.click();
+            console.log('Clicked firstElement');
             setTimeout(function() {
                 // Input field for SIM card number
                 var simInput = document.getElementById('pt1:MA:0:n1:1:pt1:i3:0:text::content');
+                console.log('Attempting to find simInput:', simInput);
                 if (simInput) {
                     simInput.value = simCardNumbers[index];
                     // Search button
                     var searchButton = document.getElementById('pt1:MA:0:n1:1:pt1:searchButton');
+                    console.log('Attempting to click searchButton:', searchButton);
                     if (searchButton) {
                         searchButton.click();
+                        console.log('Clicked searchButton');
                         setTimeout(function() {
                             // SIM hyperlink in search results
                             var simHyperlink = document.getElementById('pt1:MA:0:n1:1:pt1:pc1:ldrt:0:cl1');
+                            console.log('Attempting to click simHyperlink:', simHyperlink);
                             if (simHyperlink) {
                                 simHyperlink.click();
+                                console.log('Clicked simHyperlink');
                                 setTimeout(function() {
                                     // "Services" button link
                                     var topServiceHyperlink = document.getElementById('pt1:MA:0:n1:2:pt1:r10:0:j_id__ctru1pc12:t1:0:cl1');
+                                    console.log('Attempting to click topServiceHyperlink:', topServiceHyperlink);
                                     if (topServiceHyperlink) {
                                         topServiceHyperlink.click();
+                                        console.log('Clicked topServiceHyperlink');
                                         setTimeout(function() {
                                             // Actions dropdown
                                             var actionsDropdown = document.getElementById('pt1:MA:0:n1:3:pt1:j_id__ctru10pc6');
+                                            console.log('Attempting to click actionsDropdown:', actionsDropdown);
                                             if (actionsDropdown) {
                                                 actionsDropdown.click();
+                                                console.log('Clicked actionsDropdown');
                                                 setTimeout(function() {
                                                     // Disconnect option in actions dropdown
                                                     var disconnectOption = document.getElementById('pt1:MA:0:n1:3:pt1:DISCONNECT');
+                                                    console.log('Attempting to click disconnectOption:', disconnectOption);
                                                     if (disconnectOption) {
                                                         disconnectOption.click();
+                                                        console.log('Clicked disconnectOption');
                                                         setTimeout(function() {
                                                             // Complete option to finalize the process using XPath
                                                             var completeOption = document.evaluate('//*[@id="pt1:MA:0:n1:3:pt1:COMPLETE"]/td[2]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                                                            console.log('Attempting to click completeOption:', completeOption);
                                                             if (completeOption) {
                                                                 completeOption.click();
                                                                 console.log('Clicked on COMPLETE for SIM card:', simCardNumbers[index]);
