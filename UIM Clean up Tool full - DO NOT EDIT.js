@@ -59,7 +59,7 @@
                                                         console.log('Clicked disconnectOption');
                                                         setTimeout(function() {
                                                             // Complete option to finalize the process using XPath
-                                                            var completeOption = document.evaluate('//*[@id="pt1:MA:0:n1:3:pt1:COMPLETE"]/td[2]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                                                            var completeOption = document.evaluate('//*[@id="pt1:MA:0:n1:3:pt1:COMPLETE"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                                                             console.log('Attempting to click completeOption:', completeOption);
                                                             if (completeOption) {
                                                                 completeOption.click();
