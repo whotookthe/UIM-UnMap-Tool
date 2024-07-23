@@ -2,14 +2,30 @@
     'use strict';
 
     var simCardNumbers = [];
+    var currentIndex = 0;
+    var processCount = {}; // To track process count for each SIM card
 
-    function processSimCard(index) {
+    function processSimCard(index, processAttempt) {
         if (index >= simCardNumbers.length) {
-            console.log('All SIM cards processed.');
+            console.log('All SIM cards processed twice.');
             return;
         }
 
-        console.log('Processing SIM card number:', simCardNumbers[index]);
+        var simCardNumber = simCardNumbers[index];
+        console.log('Processing SIM card number:', simCardNumber, 'Attempt:', processAttempt);
+
+        if (!processCount[simCardNumber]) {
+            processCount[simCardNumber] = 0;
+        }
+
+        if (processCount[simCardNumber] >= 2) {
+            console.log('SIM card number', simCardNumber, 'has been processed twice. Moving to the next SIM card.');
+            processSimCard(index + 1, 1); // Move to the next SIM card with processAttempt 1
+            return;
+        }
+
+        // Update process count
+        processCount[simCardNumber]++;
 
         // Initial click to start the process Logical Devices Button
         var firstElement = document.getElementById('pt1:pt_r1:0:d1:0:j_id13');
@@ -22,7 +38,7 @@
                 var simInput = document.getElementById('pt1:MA:0:n1:1:pt1:i3:0:text::content');
                 console.log('Attempting to find simInput:', simInput);
                 if (simInput) {
-                    simInput.value = simCardNumbers[index];
+                    simInput.value = simCardNumber;
                     // Search button
                     var searchButton = document.getElementById('pt1:MA:0:n1:1:pt1:searchButton');
                     console.log('Attempting to click searchButton:', searchButton);
@@ -58,22 +74,11 @@
                                                         disconnectOption.click();
                                                         console.log('Clicked disconnectOption');
                                                         setTimeout(function() {
-                                                            // Complete option to finalize the process using XPath
-                                                            var completeOption = document.evaluate('//*[@id="pt1:MA:0:n1:3:pt1:COMPLETE"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                                                            console.log('Attempting to click completeOption:', completeOption);
-                                                            if (completeOption) {
-                                                                completeOption.click();
-                                                                console.log('Clicked on COMPLETE for SIM card:', simCardNumbers[index]);
-                                                                setTimeout(function() {
-                                                                    processSimCard(index + 1); // Process the next SIM card after a delay
-                                                                }, 10000); // Delay before starting the next SIM card process, adjust as needed
-                                                            } else {
-                                                                console.log('COMPLETE option not found for SIM card:', simCardNumbers[index]);
-                                                                processSimCard(index + 1); // Process the next SIM card
-                                                            }
-                                                        }, 2000); // Wait for disconnectOption before clicking on completeOption
+                                                            // Directly click the Complete button
+                                                            clickCompleteButton(index, processAttempt);
+                                                        }, 3000); // Wait for disconnectOption before clicking the Complete button
                                                     }
-                                                }, 2000); // Wait for actionsDropdown before clicking on disconnectOption
+                                                }, 3000); // Wait for actionsDropdown before clicking on disconnectOption
                                             }
                                         }, 3000); // Wait for topServiceHyperlink before clicking on actionsDropdown
                                     }
@@ -86,13 +91,47 @@
         }
     }
 
+    function clickCompleteButton(index, processAttempt) {
+        var completeButton = document.getElementById('pt1:MA:0:n1:3:pt1:COMPLETE');
+        console.log('Attempting to click completeButton by ID:', completeButton);
+
+        if (completeButton) {
+            // Ensure the button is visible in the viewport
+            completeButton.scrollIntoView({behavior: 'smooth', block: 'center'});
+            
+            // Wait for a short time to ensure the button is fully rendered
+            setTimeout(function() {
+                try {
+                    completeButton.click();
+                    console.log('Clicked on COMPLETE button.');
+                    setTimeout(function() {
+                        // Proceed to the next attempt or the next SIM card
+                        if (processAttempt < 2) {
+                            processSimCard(index, processAttempt + 1); // Process the same SIM card again
+                        } else {
+                            processSimCard(index + 1, 1); // Move to the next SIM card
+                        }
+                    }, 10000); // Delay before starting the next process or SIM card, adjust as needed
+                } catch (error) {
+                    console.log('Error clicking on COMPLETE:', error);
+                }
+            }, 2000); // Additional wait time before clicking
+        } else {
+            console.log('COMPLETE button not found.');
+            setTimeout(function() {
+                // Retry clicking the button if not found
+                clickCompleteButton(index, processAttempt); 
+            }, 2000); // Retry delay, adjust as needed
+        }
+    }
+
     // Function to create the GUI for entering SIM card numbers
     function createSimCardGUI() {
         var simInput = window.prompt('Enter SIM card numbers separated by spaces:');
         if (simInput) {
             simCardNumbers = simInput.trim().split(' ');
             console.log('SIM card numbers:', simCardNumbers);
-            processSimCard(0); // Start processing with the first SIM card
+            processSimCard(0, 1); // Start processing with the first SIM card and first attempt
         } else {
             console.log('No SIM card numbers entered.');
         }
