@@ -76,18 +76,18 @@
                                                         setTimeout(function() {
                                                             // Directly click the Complete button
                                                             clickCompleteButton(index, processAttempt);
-                                                        }, 3000); // Wait for disconnectOption before clicking the Complete button
+                                                        }, 5000); // Wait for disconnectOption before clicking the Complete button
                                                     }
-                                                }, 3000); // Wait for actionsDropdown before clicking on disconnectOption
+                                                }, 5000); // Wait for actionsDropdown before clicking on disconnectOption
                                             }
-                                        }, 3000); // Wait for topServiceHyperlink before clicking on actionsDropdown
+                                        }, 5000); // Wait for topServiceHyperlink before clicking on actionsDropdown
                                     }
-                                }, 3000); // Wait for simHyperlink before clicking on topServiceHyperlink
+                                }, 5000); // Wait for simHyperlink before clicking on topServiceHyperlink
                             }
-                        }, 2000); // Wait for searchButton before clicking on simHyperlink
+                        }, 3000); // Wait for searchButton before clicking on simHyperlink
                     }
                 }
-            }, 1000); // Wait for simInput before clicking on searchButton
+            }, 3000); // Wait for simInput before clicking on searchButton
         }
     }
 
@@ -115,13 +115,13 @@
                 } catch (error) {
                     console.log('Error clicking on COMPLETE:', error);
                 }
-            }, 2000); // Additional wait time before clicking
+            }, 5000); // Additional wait time before clicking
         } else {
             console.log('COMPLETE button not found.');
             setTimeout(function() {
                 // Retry clicking the button if not found
                 clickCompleteButton(index, processAttempt); 
-            }, 2000); // Retry delay, adjust as needed
+            }, 5000); // Retry delay, adjust as needed
         }
     }
 
