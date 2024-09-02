@@ -76,13 +76,13 @@
                                                         setTimeout(function() {
                                                             // Directly click the Complete button
                                                             clickCompleteButton(index, processAttempt);
-                                                        }, 5000); // Wait for disconnectOption before clicking the Complete button
+                                                        }, 3000); // Wait for disconnectOption before clicking the Complete button
                                                     }
-                                                }, 5000); // Wait for actionsDropdown before clicking on disconnectOption
+                                                }, 3000); // Wait for actionsDropdown before clicking on disconnectOption
                                             }
-                                        }, 5000); // Wait for topServiceHyperlink before clicking on actionsDropdown
+                                        }, 4000); // Wait for topServiceHyperlink before clicking on actionsDropdown
                                     }
-                                }, 5000); // Wait for simHyperlink before clicking on topServiceHyperlink
+                                }, 3000); // Wait for simHyperlink before clicking on topServiceHyperlink
                             }
                         }, 3000); // Wait for searchButton before clicking on simHyperlink
                     }
