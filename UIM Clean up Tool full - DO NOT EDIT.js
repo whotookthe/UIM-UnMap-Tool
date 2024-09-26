@@ -4,10 +4,12 @@
     var simCardNumbers = [];
     var currentIndex = 0;
     var processCount = {}; // To track process count for each SIM card
+    var failedSimCards = []; // To track SIM cards that couldn't be processed
 
     function processSimCard(index, processAttempt) {
         if (index >= simCardNumbers.length) {
             console.log('All SIM cards processed twice.');
+            displayFailedSimCards(); // Display failed SIMs at the end
             return;
         }
 
@@ -76,18 +78,32 @@
                                                         setTimeout(function() {
                                                             // Directly click the Complete button
                                                             clickCompleteButton(index, processAttempt);
-                                                        }, 3000); // Wait for disconnectOption before clicking the Complete button
+                                                        }, 2000); // Reduced to 2 seconds
+                                                    } else {
+                                                        handleElementNotFound(index, simCardNumber);
                                                     }
-                                                }, 3000); // Wait for actionsDropdown before clicking on disconnectOption
+                                                }, 2000); // Reduced to 2 seconds
+                                            } else {
+                                                handleElementNotFound(index, simCardNumber);
                                             }
-                                        }, 4000); // Wait for topServiceHyperlink before clicking on actionsDropdown
+                                        }, 3000); // Reduced to 3 seconds
+                                    } else {
+                                        handleElementNotFound(index, simCardNumber);
                                     }
-                                }, 3000); // Wait for simHyperlink before clicking on topServiceHyperlink
+                                }, 2000); // Reduced to 2 seconds
+                            } else {
+                                handleElementNotFound(index, simCardNumber);
                             }
-                        }, 3000); // Wait for searchButton before clicking on simHyperlink
+                        }, 2000); // Reduced to 2 seconds
+                    } else {
+                        handleElementNotFound(index, simCardNumber);
                     }
+                } else {
+                    handleElementNotFound(index, simCardNumber);
                 }
-            }, 3000); // Wait for simInput before clicking on searchButton
+            }, 2000); // Reduced to 2 seconds
+        } else {
+            handleElementNotFound(index, simCardNumber);
         }
     }
 
@@ -111,17 +127,31 @@
                         } else {
                             processSimCard(index + 1, 1); // Move to the next SIM card
                         }
-                    }, 10000); // Delay before starting the next process or SIM card, adjust as needed
+                    }, 9000); // Reduced to 9 seconds
                 } catch (error) {
                     console.log('Error clicking on COMPLETE:', error);
+                    handleElementNotFound(index, simCardNumber);
                 }
-            }, 5000); // Additional wait time before clicking
+            }, 4000); // Reduced to 4 seconds
         } else {
             console.log('COMPLETE button not found.');
-            setTimeout(function() {
-                // Retry clicking the button if not found
-                clickCompleteButton(index, processAttempt); 
-            }, 5000); // Retry delay, adjust as needed
+            handleElementNotFound(index, simCardNumber);
+        }
+    }
+
+    // If an element isn't found, log the failure and move to the next SIM card
+    function handleElementNotFound(index, simCardNumber) {
+        console.log('Element not found for SIM card:', simCardNumber);
+        failedSimCards.push(simCardNumber);
+        processSimCard(index + 1, 1); // Move to the next SIM card
+    }
+
+    // Display a popup listing failed SIM cards
+    function displayFailedSimCards() {
+        if (failedSimCards.length > 0) {
+            alert('The following SIM cards could not be processed:\n' + failedSimCards.join(', '));
+        } else {
+            alert('All SIM cards were processed successfully.');
         }
     }
 
