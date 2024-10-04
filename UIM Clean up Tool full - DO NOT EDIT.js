@@ -48,52 +48,62 @@
                         searchButton.click();
                         console.log('Clicked searchButton');
                         setTimeout(function() {
-                            // SIM hyperlink in search results
-                            var simHyperlink = document.getElementById('pt1:MA:0:n1:1:pt1:pc1:ldrt:0:cl1');
-                            console.log('Attempting to click simHyperlink:', simHyperlink);
-                            if (simHyperlink) {
-                                simHyperlink.click();
-                                console.log('Clicked simHyperlink');
-                                setTimeout(function() {
-                                    // "Services" button link
-                                    var topServiceHyperlink = document.getElementById('pt1:MA:0:n1:2:pt1:r10:0:j_id__ctru1pc12:t1:0:cl1');
-                                    console.log('Attempting to click topServiceHyperlink:', topServiceHyperlink);
-                                    if (topServiceHyperlink) {
-                                        topServiceHyperlink.click();
-                                        console.log('Clicked topServiceHyperlink');
-                                        setTimeout(function() {
-                                            // Actions dropdown
-                                            var actionsDropdown = document.getElementById('pt1:MA:0:n1:3:pt1:j_id__ctru10pc6');
-                                            console.log('Attempting to click actionsDropdown:', actionsDropdown);
-                                            if (actionsDropdown) {
-                                                actionsDropdown.click();
-                                                console.log('Clicked actionsDropdown');
+                            // Retry mechanism for SIM hyperlink
+                            retryUntilElementFound(
+                                'pt1:MA:0:n1:1:pt1:pc1:ldrt:0:cl1',
+                                function(simHyperlink) {
+                                    console.log('Clicked simHyperlink:', simHyperlink);
+                                    simHyperlink.click();
+                                    setTimeout(function() {
+                                        // Retry for Services link
+                                        retryUntilElementFound(
+                                            'pt1:MA:0:n1:2:pt1:r10:0:j_id__ctru1pc12:t1:0:cl1',
+                                            function(topServiceHyperlink) {
+                                                console.log('Clicked topServiceHyperlink:', topServiceHyperlink);
+                                                topServiceHyperlink.click();
                                                 setTimeout(function() {
-                                                    // Disconnect option in actions dropdown
-                                                    var disconnectOption = document.getElementById('pt1:MA:0:n1:3:pt1:DISCONNECT');
-                                                    console.log('Attempting to click disconnectOption:', disconnectOption);
-                                                    if (disconnectOption) {
-                                                        disconnectOption.click();
-                                                        console.log('Clicked disconnectOption');
-                                                        setTimeout(function() {
-                                                            // Directly click the Complete button
-                                                            clickCompleteButton(index, processAttempt);
-                                                        }, 2000); // Reduced to 2 seconds
-                                                    } else {
-                                                        handleElementNotFound(index, simCardNumber, 'Disconnect option not found');
-                                                    }
-                                                }, 2000); // Reduced to 2 seconds
-                                            } else {
-                                                handleElementNotFound(index, simCardNumber, 'Actions dropdown not found');
-                                            }
-                                        }, 3000); // Reduced to 3 seconds
-                                    } else {
-                                        handleElementNotFound(index, simCardNumber, 'Services link not found');
-                                    }
-                                }, 3000); // Timeout #3: Increased to 3 seconds
-                            } else {
-                                handleElementNotFound(index, simCardNumber, 'SIM hyperlink not found');
-                            }
+                                                    // Retry for Actions dropdown
+                                                    retryUntilElementFound(
+                                                        'pt1:MA:0:n1:3:pt1:j_id__ctru10pc6',
+                                                        function(actionsDropdown) {
+                                                            console.log('Clicked actionsDropdown:', actionsDropdown);
+                                                            actionsDropdown.click();
+                                                            setTimeout(function() {
+                                                                var disconnectOption = document.getElementById('pt1:MA:0:n1:3:pt1:DISCONNECT');
+                                                                console.log('Attempting to click disconnectOption:', disconnectOption);
+                                                                if (disconnectOption) {
+                                                                    disconnectOption.click();
+                                                                    console.log('Clicked disconnectOption');
+                                                                    setTimeout(function() {
+                                                                        clickCompleteButton(index, processAttempt);
+                                                                    }, 2000); // Reduced to 2 seconds
+                                                                } else {
+                                                                    handleElementNotFound(index, simCardNumber, 'Disconnect option not found');
+                                                                }
+                                                            }, 2000); // Reduced to 2 seconds
+                                                        },
+                                                        500, // Check every 500 ms
+                                                        20,  // Try up to 20 times (10 seconds max)
+                                                        index,
+                                                        simCardNumber,
+                                                        'Actions dropdown not found'
+                                                    );
+                                                }, 3000); // Reduced to 3 seconds
+                                            },
+                                            500, // Check every 500 ms
+                                            20,  // Try up to 20 times (10 seconds max)
+                                            index,
+                                            simCardNumber,
+                                            'Services link not found'
+                                        );
+                                    }, 3000); // Timeout #3 is still 3 seconds
+                                },
+                                500, // Check every 500 ms
+                                20,  // Try up to 20 times (10 seconds max)
+                                index,
+                                simCardNumber,
+                                'SIM hyperlink not found'
+                            );
                         }, 2000); // Reduced to 2 seconds
                     } else {
                         handleElementNotFound(index, simCardNumber, 'Search button not found');
@@ -136,6 +146,22 @@
         } else {
             handleElementNotFound(index, simCardNumber, 'Complete button not found');
         }
+    }
+
+    // Retry mechanism: Keep checking for an element until it's found or timeout
+    function retryUntilElementFound(elementId, onSuccess, retryInterval, maxAttempts, index, simCardNumber, errorReason) {
+        var attemptCount = 0;
+        var intervalId = setInterval(function() {
+            var element = document.getElementById(elementId);
+            if (element) {
+                clearInterval(intervalId); // Stop retrying when the element is found
+                onSuccess(element);        // Call the success callback with the element
+            } else if (attemptCount >= maxAttempts) {
+                clearInterval(intervalId); // Stop retrying after max attempts
+                handleElementNotFound(index, simCardNumber, errorReason);
+            }
+            attemptCount++;
+        }, retryInterval);
     }
 
     // If an element isn't found, log the failure with reason and move to the next SIM card
