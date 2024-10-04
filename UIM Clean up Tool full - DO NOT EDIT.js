@@ -78,7 +78,7 @@
                                                                         clickCompleteButton(index, processAttempt);
                                                                     }, 2000); // Reduced to 2 seconds
                                                                 } else {
-                                                                    handleElementNotFound(index, simCardNumber, 'Disconnect option not found');
+                                                                    handleElementNotFound(index, simCardNumber, 'Disconnect option');
                                                                 }
                                                             }, 2000); // Reduced to 2 seconds
                                                         },
@@ -86,7 +86,7 @@
                                                         20,  // Try up to 20 times (10 seconds max)
                                                         index,
                                                         simCardNumber,
-                                                        'Actions dropdown not found'
+                                                        'Actions dropdown'
                                                     );
                                                 }, 3000); // Reduced to 3 seconds
                                             },
@@ -94,7 +94,7 @@
                                             20,  // Try up to 20 times (10 seconds max)
                                             index,
                                             simCardNumber,
-                                            'Services link not found'
+                                            'Services link'
                                         );
                                     }, 3000); // Timeout #3 is still 3 seconds
                                 },
@@ -102,18 +102,18 @@
                                 20,  // Try up to 20 times (10 seconds max)
                                 index,
                                 simCardNumber,
-                                'SIM hyperlink not found'
+                                'SIM hyperlink'
                             );
                         }, 2000); // Reduced to 2 seconds
                     } else {
-                        handleElementNotFound(index, simCardNumber, 'Search button not found');
+                        handleElementNotFound(index, simCardNumber, 'Search button');
                     }
                 } else {
-                    handleElementNotFound(index, simCardNumber, 'SIM card input field not found');
+                    handleElementNotFound(index, simCardNumber, 'SIM card input field');
                 }
             }, 2000); // Reduced to 2 seconds
         } else {
-            handleElementNotFound(index, simCardNumber, 'Logical Devices button not found');
+            handleElementNotFound(index, simCardNumber, 'Logical Devices button');
         }
     }
 
@@ -140,16 +140,16 @@
                     }, 9000); // Reduced to 9 seconds
                 } catch (error) {
                     console.log('Error clicking on COMPLETE:', error);
-                    handleElementNotFound(index, simCardNumber, 'Error clicking on COMPLETE');
+                    handleElementNotFound(index, simCardNumber, 'Complete button');
                 }
             }, 4000); // Reduced to 4 seconds
         } else {
-            handleElementNotFound(index, simCardNumber, 'Complete button not found');
+            handleElementNotFound(index, simCardNumber, 'Complete button');
         }
     }
 
     // Retry mechanism: Keep checking for an element until it's found or timeout
-    function retryUntilElementFound(elementId, onSuccess, retryInterval, maxAttempts, index, simCardNumber, errorReason) {
+    function retryUntilElementFound(elementId, onSuccess, retryInterval, maxAttempts, index, simCardNumber, elementName) {
         var attemptCount = 0;
         var intervalId = setInterval(function() {
             var element = document.getElementById(elementId);
@@ -158,15 +158,15 @@
                 onSuccess(element);        // Call the success callback with the element
             } else if (attemptCount >= maxAttempts) {
                 clearInterval(intervalId); // Stop retrying after max attempts
-                handleElementNotFound(index, simCardNumber, errorReason);
+                handleElementNotFound(index, simCardNumber, elementName);
             }
             attemptCount++;
         }, retryInterval);
     }
 
     // If an element isn't found, log the failure with reason and move to the next SIM card
-    function handleElementNotFound(index, simCardNumber, reason) {
-        var failureMessage = 'Element not found (' + reason + ') for SIM card: ' + simCardNumber;
+    function handleElementNotFound(index, simCardNumber, elementName) {
+        var failureMessage = 'Element not found while trying to click ' + elementName + ' for SIM card: ' + simCardNumber;
         console.log(failureMessage);
         failedSimCards.push(failureMessage); // Track the reason along with the SIM card
         processSimCard(index + 1, 1); // Move to the next SIM card
