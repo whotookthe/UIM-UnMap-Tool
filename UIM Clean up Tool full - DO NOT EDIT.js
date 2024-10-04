@@ -80,30 +80,30 @@
                                                             clickCompleteButton(index, processAttempt);
                                                         }, 2000); // Reduced to 2 seconds
                                                     } else {
-                                                        handleElementNotFound(index, simCardNumber);
+                                                        handleElementNotFound(index, simCardNumber, 'Disconnect option not found');
                                                     }
                                                 }, 2000); // Reduced to 2 seconds
                                             } else {
-                                                handleElementNotFound(index, simCardNumber);
+                                                handleElementNotFound(index, simCardNumber, 'Actions dropdown not found');
                                             }
                                         }, 3000); // Reduced to 3 seconds
                                     } else {
-                                        handleElementNotFound(index, simCardNumber);
+                                        handleElementNotFound(index, simCardNumber, 'Services link not found');
                                     }
-                                }, 2000); // Reduced to 2 seconds
+                                }, 3000); // Timeout #3: Increased to 3 seconds
                             } else {
-                                handleElementNotFound(index, simCardNumber);
+                                handleElementNotFound(index, simCardNumber, 'SIM hyperlink not found');
                             }
                         }, 2000); // Reduced to 2 seconds
                     } else {
-                        handleElementNotFound(index, simCardNumber);
+                        handleElementNotFound(index, simCardNumber, 'Search button not found');
                     }
                 } else {
-                    handleElementNotFound(index, simCardNumber);
+                    handleElementNotFound(index, simCardNumber, 'SIM card input field not found');
                 }
             }, 2000); // Reduced to 2 seconds
         } else {
-            handleElementNotFound(index, simCardNumber);
+            handleElementNotFound(index, simCardNumber, 'Logical Devices button not found');
         }
     }
 
@@ -130,26 +130,26 @@
                     }, 9000); // Reduced to 9 seconds
                 } catch (error) {
                     console.log('Error clicking on COMPLETE:', error);
-                    handleElementNotFound(index, simCardNumber);
+                    handleElementNotFound(index, simCardNumber, 'Error clicking on COMPLETE');
                 }
             }, 4000); // Reduced to 4 seconds
         } else {
-            console.log('COMPLETE button not found.');
-            handleElementNotFound(index, simCardNumber);
+            handleElementNotFound(index, simCardNumber, 'Complete button not found');
         }
     }
 
-    // If an element isn't found, log the failure and move to the next SIM card
-    function handleElementNotFound(index, simCardNumber) {
-        console.log('Element not found for SIM card:', simCardNumber);
-        failedSimCards.push(simCardNumber);
+    // If an element isn't found, log the failure with reason and move to the next SIM card
+    function handleElementNotFound(index, simCardNumber, reason) {
+        var failureMessage = 'Element not found (' + reason + ') for SIM card: ' + simCardNumber;
+        console.log(failureMessage);
+        failedSimCards.push(failureMessage); // Track the reason along with the SIM card
         processSimCard(index + 1, 1); // Move to the next SIM card
     }
 
-    // Display a popup listing failed SIM cards
+    // Display a popup listing failed SIM cards and reasons
     function displayFailedSimCards() {
         if (failedSimCards.length > 0) {
-            alert('The following SIM cards could not be processed:\n' + failedSimCards.join(', '));
+            alert('The following SIM cards could not be processed:\n' + failedSimCards.join('\n'));
         } else {
             alert('All SIM cards were processed successfully.');
         }
